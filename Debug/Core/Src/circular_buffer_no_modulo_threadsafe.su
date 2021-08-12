@@ -1,0 +1,11 @@
+circular_buffer_no_modulo_threadsafe.c:19:13:advance_pointer.part.0	8	static
+circular_buffer_no_modulo_threadsafe.c:48:15:circular_buf_init	16	static
+circular_buffer_no_modulo_threadsafe.c:64:6:circular_buf_free	8	static
+circular_buffer_no_modulo_threadsafe.c:70:6:circular_buf_reset	8	static
+circular_buffer_no_modulo_threadsafe.c:78:8:circular_buf_size	16	static
+circular_buffer_no_modulo_threadsafe.c:100:8:circular_buf_capacity	8	static
+circular_buffer_no_modulo_threadsafe.c:107:6:circular_buf_put	8	static
+circular_buffer_no_modulo_threadsafe.c:116:5:circular_buf_put2	16	static
+circular_buffer_no_modulo_threadsafe.c:132:5:circular_buf_get	8	static
+circular_buffer_no_modulo_threadsafe.c:149:6:circular_buf_empty	8	static
+circular_buffer_no_modulo_threadsafe.c:156:6:circular_buf_full	0	static

@@ -1,0 +1,6 @@
+utility.c:33:6:cobs_doing	24	static
+utility.c:62:6:rs485_send	8	static
+utility.c:69:6:HAL_UART_TxCpltCallback	0	static
+utility.c:78:6:cobs_reset	0	static
+utility.c:84:6:cobs_encode	8	static
+utility.c:103:6:StuffData	16	static
