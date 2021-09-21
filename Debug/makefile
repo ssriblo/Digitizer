@@ -37,8 +37,8 @@ $(wildcard ../makefile.targets) \
 
 BUILD_ARTIFACT_NAME := STM32F070F6_DIGITIZER2
 BUILD_ARTIFACT_EXTENSION := elf
-BUILD_ARTIFACT_PREFIX := 
-BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME).$(BUILD_ARTIFACT_EXTENSION)
+BUILD_ARTIFACT_PREFIX :=
+BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
@@ -61,8 +61,8 @@ all: main-build
 main-build: STM32F070F6_DIGITIZER2.elf secondary-outputs
 
 # Tool invocations
-STM32F070F6_DIGITIZER2.elf: $(OBJS) $(USER_OBJS) E:\freelance\STM32_LIBRARY_etc\STM32CudeIDE1.6_Workspace\STM32F070F6_DIGITIZER2\STM32F070F6PX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM32F070F6_DIGITIZER2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"E:\freelance\STM32_LIBRARY_etc\STM32CudeIDE1.6_Workspace\STM32F070F6_DIGITIZER2\STM32F070F6PX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F070F6_DIGITIZER2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM32F070F6_DIGITIZER2.elf: $(OBJS) $(USER_OBJS) /media/me20/86D07263D072597F/freelance/STM32_LIBRARY_etc/STM32CudeIDE1.7_Workspace/STM32F070F6_DIGITIZER2/STM32F070F6PX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM32F070F6_DIGITIZER2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"/media/me20/86D07263D072597F/freelance/STM32_LIBRARY_etc/STM32CudeIDE1.7_Workspace/STM32F070F6_DIGITIZER2/STM32F070F6PX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F070F6_DIGITIZER2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -83,7 +83,7 @@ STM32F070F6_DIGITIZER2.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL
 
 # Other Targets
 clean:
-	-$(RM) *
+	-$(RM) $(SIZE_OUTPUT)$(OBJDUMP_LIST)$(EXECUTABLES)$(OBJS)$(S_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(OBJCOPY_BIN) STM32F070F6_DIGITIZER2.elf
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
@@ -96,6 +96,5 @@ warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
 .PHONY: all clean dependents fail-specified-linker-script-missing warn-no-linker-script-specified
-.SECONDARY:
 
 -include ../makefile.targets
