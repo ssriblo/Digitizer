@@ -57,7 +57,11 @@ UART_HandleTypeDef huart1;
 /*****************************************************************************/
 cbuf_handle_t cbuf;
 uint16_t buffer[RING_BUFFER_SIZE * sizeof(uint16_t)];
-
+#define TEST_BUFF	1
+#ifdef TEST_BUFF
+cbuf_handle_t cbuf4Test;
+uint16_t buffer4Test[RING_BUFFER_SIZE * sizeof(uint16_t)];
+#endif
 /*****************************************************************************/
 
 /* USER CODE END PV */
@@ -117,9 +121,12 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 //  uint16_t * buffer  = malloc(RING_BUFFER_SIZE * sizeof(uint16_t));
-  memset(buffer, 0xFF, sizeof(uint16_t)); // for debugging
   cbuf = circular_buf_init(buffer, RING_BUFFER_SIZE);
-
+  memset(buffer, 0xFF, sizeof(uint16_t)*RING_BUFFER_SIZE); // for debugging
+#ifdef TEST_BUFF
+  cbuf4Test = circular_buf_init(buffer4Test, RING_BUFFER_SIZE);
+  memset(buffer4Test, 0xFF, sizeof(uint16_t)*RING_BUFFER_SIZE); // for debugging
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -131,7 +138,9 @@ int main(void)
   {
   	if(0 == circular_buf_get(cbuf, &data)){
   		// new data appeared
-
+#ifdef TEST_BUFF
+  	    circular_buf_put(cbuf4Test, data); //
+#endif
   		// Let check RingBuff size:
   		temp = circular_buf_size(cbuf);
   		if(temp > ring_buff_size){
