@@ -124,14 +124,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   SPI1->CR1 |= 1<<SPI_CR1_SPE_Pos; //Turn On SPI
   HAL_TIM_Base_Start_IT(&htim14);
   while (1)
   {
   	if(0 == circular_buf_get(cbuf, &data)){
   		// new data appeared
-
-  		GPIOA->BSRR = TEST_PA4_Pin; // Set High
 
   		// Let check RingBuff size:
   		temp = circular_buf_size(cbuf);
@@ -152,11 +151,8 @@ int main(void)
 				cobs_doing((uint16_t)avrg_data);
 			}
 
-				GPIOA->BSRR = (uint32_t)TEST_PA4_Pin <<16u; // Set LOW
-
   	}
   }
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -226,11 +222,11 @@ static void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT; // SPI_DATASIZE_16BIT
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW; // Must be SPI_POLARITY_LOW
+  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE; // Must be SPI_PHASE_2EDGE
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
