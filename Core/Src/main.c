@@ -131,7 +131,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  SET_BIT(SPI1->CR2, SPI_RXFIFO_THRESHOLD);
   SPI1->CR1 |= 1<<SPI_CR1_SPE_Pos; //Turn On SPI
   HAL_TIM_Base_Start_IT(&htim14);
   while (1)

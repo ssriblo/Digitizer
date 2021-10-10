@@ -178,52 +178,20 @@ void TIM14_IRQHandler(void)
 //    GPIOA->BSRR = TEST_PA4_Pin; // Set High
 #define SPILOW 1
 #ifdef SPILOW
-#ifdef SPI_16BIT
-    while(!(SPI1->SR & SPI_SR_TXE)){}
-    *((__IO uint8_t *)&SPI1->DR) = 0xFF;
-    while (!(SPI1->SR & SPI_SR_RXNE)){}
-    while ( SPI1->SR & SPI_SR_FRLVL )
-    {
-          (void)SPI1->DR;
-    }
-
-    while(!(SPI1->SR & SPI_SR_TXE)){}
-    *((__IO uint8_t *)&SPI1->DR) = 0xFF;
-    while (!(SPI1->SR & SPI_SR_RXNE)){}
-    word = (uint16_t)SPI1->DR;
-#elif SPI_8BIT
-//    while(!(SPI1->SR & SPI_SR_TXE)){}
-//    *((__IO uint8_t *)&SPI1->DR) = 0xFF;
-//    while (!(SPI1->SR & SPI_SR_RXNE)){}
-//    byte_lsb = (uint8_t)SPI1->DR;
-
-
-    while(!(SPI1->SR & SPI_SR_TXE));
-    *(volatile uint8_t *)&SPI1->DR = 0;
-    while(!(SPI1->SR & SPI_SR_RXNE));
-    byte_msb = (*(volatile uint8_t *)&SPI1->DR);
-    *(volatile uint8_t *)&SPI1->DR = 0;
-    while(!(SPI1->SR & SPI_SR_RXNE));
-    byte_lsb = (*(volatile uint8_t *)&SPI1->DR);
-    word = (byte_lsb && 0xFF) + ((byte_msb && 0xFF) << 8);
-#else // from HAL copy/paste
-    uint32_t TxXferCount = 2;
-    uint32_t RxXferCount = 2;
-    uint32_t txallowed = 1U;
+    bool txallowed = true;
     bool rxMsb = true;
-    while ((TxXferCount > 0U) || (RxXferCount > 0U))
+    bool rxEnd = false;
+    while (rxEnd == false)
     {
       /* Check TXE flag */
-      if ( (SPI1->SR & SPI_SR_TXE) && (TxXferCount > 0U) && (txallowed == 1U))
+      if ( (SPI1->SR & SPI_SR_TXE) && (txallowed == true))
       {
         SPI1->DR = 0xFF;
-        TxXferCount--;
         /* Next Data is a reception (Rx). Tx not allowed */
-        txallowed = 0U;
+        txallowed = false;
       }
-
       /* Wait until RXNE flag is reset */
-      if( ( SPI1->SR & SPI_SR_RXNE ) && (RxXferCount > 0U) )
+      if( SPI1->SR & SPI_SR_RXNE )
       {
         if(rxMsb == true){
           byte_msb = (*(volatile uint8_t *)&SPI1->DR);
@@ -231,16 +199,13 @@ void TIM14_IRQHandler(void)
       	  rxMsb = false;
         }else{
           byte_lsb = (*(volatile uint8_t *)&SPI1->DR);
-
+          rxEnd = true;
         }
-        RxXferCount--;
         /* Next Data is a Transmission (Tx). Tx is allowed */
-        txallowed = 1U;
+        txallowed = true;
       }
     }
     word = (byte_lsb) + (byte_msb << 8);
-
-#endif // SPI_16BIT SPI_8BIT
 #else // SPILOW - no
     uint8_t pData[10];
     HAL_SPI_TransmitReceive (&hspi1, pData, pData, 2, HAL_MAX_DELAY);
