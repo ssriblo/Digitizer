@@ -156,7 +156,7 @@ void SysTick_Handler(void)
 void TIM14_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM14_IRQn 0 */
-  static uint16_t word;
+  volatile uint16_t word;
   static bool flip_flop = false;
   volatile uint32_t byte_msb, byte_lsb;
 //  static uint16_t word;
@@ -176,8 +176,9 @@ void TIM14_IRQHandler(void)
     GPIOA->BSRR = (uint32_t)CNVST_Pin <<16u; // Set LOW
 
 //    GPIOA->BSRR = TEST_PA4_Pin; // Set High
-//#define SPILOW 1
+#define SPILOW 1
 #ifdef SPILOW
+#ifdef SPI_16BIT
     while(!(SPI1->SR & SPI_SR_TXE)){}
     *((__IO uint8_t *)&SPI1->DR) = 0xFF;
     while (!(SPI1->SR & SPI_SR_RXNE)){}
@@ -189,27 +190,62 @@ void TIM14_IRQHandler(void)
     while(!(SPI1->SR & SPI_SR_TXE)){}
     *((__IO uint8_t *)&SPI1->DR) = 0xFF;
     while (!(SPI1->SR & SPI_SR_RXNE)){}
-    word = (uint8_t)SPI1->DR;
-
+    word = (uint16_t)SPI1->DR;
+#elif SPI_8BIT
 //    while(!(SPI1->SR & SPI_SR_TXE)){}
 //    *((__IO uint8_t *)&SPI1->DR) = 0xFF;
 //    while (!(SPI1->SR & SPI_SR_RXNE)){}
 //    byte_lsb = (uint8_t)SPI1->DR;
 
 
-//    while(!(SPI1->SR & SPI_SR_TXE));
-//    *(volatile uint8_t *)&SPI1->DR = 0;
-//    while(!(SPI1->SR & SPI_SR_RXNE));
-//    byte_msb = (*(volatile uint8_t *)&SPI1->DR);
-//    *(volatile uint8_t *)&SPI1->DR = 0;
-//    while(!(SPI1->SR & SPI_SR_RXNE));
-//    byte_lsb = (*(volatile uint8_t *)&SPI1->DR);
-//    word = (byte_lsb && 0xFF) + ((byte_msb && 0xFF) << 8);
-#else
+    while(!(SPI1->SR & SPI_SR_TXE));
+    *(volatile uint8_t *)&SPI1->DR = 0;
+    while(!(SPI1->SR & SPI_SR_RXNE));
+    byte_msb = (*(volatile uint8_t *)&SPI1->DR);
+    *(volatile uint8_t *)&SPI1->DR = 0;
+    while(!(SPI1->SR & SPI_SR_RXNE));
+    byte_lsb = (*(volatile uint8_t *)&SPI1->DR);
+    word = (byte_lsb && 0xFF) + ((byte_msb && 0xFF) << 8);
+#else // from HAL copy/paste
+    uint32_t TxXferCount = 2;
+    uint32_t RxXferCount = 2;
+    uint32_t txallowed = 1U;
+    bool rxMsb = true;
+    while ((TxXferCount > 0U) || (RxXferCount > 0U))
+    {
+      /* Check TXE flag */
+      if ( (SPI1->SR & SPI_SR_TXE) && (TxXferCount > 0U) && (txallowed == 1U))
+      {
+        SPI1->DR = 0xFF;
+        TxXferCount--;
+        /* Next Data is a reception (Rx). Tx not allowed */
+        txallowed = 0U;
+      }
+
+      /* Wait until RXNE flag is reset */
+      if( ( SPI1->SR & SPI_SR_RXNE ) && (RxXferCount > 0U) )
+      {
+        if(rxMsb == true){
+          byte_msb = (*(volatile uint8_t *)&SPI1->DR);
+
+      	  rxMsb = false;
+        }else{
+          byte_lsb = (*(volatile uint8_t *)&SPI1->DR);
+
+        }
+        RxXferCount--;
+        /* Next Data is a Transmission (Tx). Tx is allowed */
+        txallowed = 1U;
+      }
+    }
+    word = (byte_lsb) + (byte_msb << 8);
+
+#endif // SPI_16BIT SPI_8BIT
+#else // SPILOW - no
     uint8_t pData[10];
     HAL_SPI_TransmitReceive (&hspi1, pData, pData, 2, HAL_MAX_DELAY);
     word = (pData[0]<<8) + pData[1];
-#endif
+#endif // SPILOW - end
 //    GPIOA->BSRR = (uint32_t)TEST_PA4_Pin <<16u; // Set LOW
 
     /**************************************************/
