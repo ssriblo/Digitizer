@@ -180,12 +180,9 @@ void TIM14_IRQHandler(void)
 #ifdef SPILOW
     bool txallowed = true;
     bool rxMsb = true;
-    bool rxEnd = false;
-    while (rxEnd == false)
-    {
+    while (true){
       /* Check TXE flag */
-      if ( (SPI1->SR & SPI_SR_TXE) && (txallowed == true))
-      {
+      if ( (SPI1->SR & SPI_SR_TXE) && (txallowed == true)){
         SPI1->DR = 0xFF;
         /* Next Data is a reception (Rx). Tx not allowed */
         txallowed = false;
@@ -199,13 +196,13 @@ void TIM14_IRQHandler(void)
       	  rxMsb = false;
         }else{
           byte_lsb = (*(volatile uint8_t *)&SPI1->DR);
-          rxEnd = true;
+          break;
         }
         /* Next Data is a Transmission (Tx). Tx is allowed */
         txallowed = true;
       }
     }
-    word = (byte_lsb) + (byte_msb << 8);
+    word = (byte_lsb & 0xFF) + ((byte_msb & 0xFF)<< 8 );
 #else // SPILOW - no
     uint8_t pData[10];
     HAL_SPI_TransmitReceive (&hspi1, pData, pData, 2, HAL_MAX_DELAY);
