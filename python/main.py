@@ -4,6 +4,7 @@ import sys
 from cobs import cobs
 import matplotlib.pyplot as plt
 import array
+import numpy as np
 
 PRINTLOG = 0
 data = array.array('I')
@@ -29,7 +30,7 @@ def main(arg):
 
     buf = bytearray()
     count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER reading
-    NUMBER = 40
+    NUMBER = 30
     print("***********************************************************************")
     while True:
         chunk = ser.read(66)
@@ -38,8 +39,10 @@ def main(arg):
                 count = count + 1
             printLog(f'************ COUNT={count}')
             if(count > NUMBER):
-                print(f'SIZE={data.buffer_info()}')
-                plt.plot(data)
+                x = np.arange(0, data.buffer_info()[1], 1)
+                print(f'SIZE={data.buffer_info()[1]}')
+                plt.plot(x,data)
+#                plt.plot(data)
                 plt.show()
                 # for w in data:
                 #     print(w)
