@@ -2,10 +2,11 @@ import serial
 import time
 import sys
 from cobs import cobs
+import matplotlib.pyplot as plt
+import array
 
 PRINTLOG = 0
-BUFF_SIZE = 1024
-#streamBuff('I')
+data = array.array('I')
 
 def printLog(a):
     if( PRINTLOG > 0):
@@ -28,7 +29,7 @@ def main(arg):
 
     buf = bytearray()
     count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER reading
-    NUMBER = 6
+    NUMBER = 40
     print("***********************************************************************")
     while True:
         chunk = ser.read(66)
@@ -36,7 +37,12 @@ def main(arg):
             if(count >=0): 
                 count = count + 1
             printLog(f'************ COUNT={count}')
-            if(count > 5):
+            if(count > NUMBER):
+                print(f'SIZE={data.buffer_info()}')
+                plt.plot(data)
+                plt.show()
+                # for w in data:
+                #     print(w)
                 return
             buf.extend(chunk)
             bytes_to_drop = handle_buf(buf)
@@ -55,14 +61,15 @@ def handle_buf(buf):
         printLog(type(decoded))
         printLog(f'DECODED: \n{decoded.hex()}')
         for byte in decoded:
-            print(f'byte={byte} odd={odd}')
+#            print(f'byte={byte} odd={odd}')
             if(odd == 1):
                 byte_msb = byte
                 odd = 0
             else:
                 word = byte_msb + byte*256
                 odd = 1
-                print(f'\t\tword={word}')
+#                print(f'\t\tword={word}')
+                data.append(word)
             
 
         return zero_index + 66
