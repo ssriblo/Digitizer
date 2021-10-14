@@ -14,10 +14,8 @@ def main(arg):
     if(len(arg) > 1):
         # arg[1] printLog flag
         print(">>>-1")
-        if(arg[1] == "1"):
-            PRINTLOG = 1
-            print(">>>-2")
-            print(PRINTLOG)
+        PRINTLOG = int(arg[1])
+        print(PRINTLOG)
 
     ser = serial.Serial()
     ser.baudrate = 115200*8
