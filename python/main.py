@@ -4,6 +4,8 @@ import sys
 from cobs import cobs
 
 PRINTLOG = 0
+BUFF_SIZE = 1024
+#streamBuff('I')
 
 def printLog(a):
     if( PRINTLOG > 0):
@@ -45,11 +47,24 @@ def handle_buf(buf):
     zero_index = buf.index(0)
     printLog(f'zero index={zero_index}')
     printLog(f'handle_buff(): \n{buf.hex()}')
+    odd = 1
     if(len(buf) > zero_index + 65):
         cobs_buff = buf[zero_index + 1:zero_index+66]
         printLog(f'COBS BUFF: \n{cobs_buff.hex()}')
         decoded = cobs.decode(cobs_buff)
+        printLog(type(decoded))
         printLog(f'DECODED: \n{decoded.hex()}')
+        for byte in decoded:
+            print(f'byte={byte} odd={odd}')
+            if(odd == 1):
+                byte_msb = byte
+                odd = 0
+            else:
+                word = byte_msb + byte*256
+                odd = 1
+                print(f'\t\tword={word}')
+            
+
         return zero_index + 66
     else:
         return 0
