@@ -22,16 +22,21 @@ def main(arg):
         print(PRINTLOG)
 
     ser = serial.Serial()
-    ser.baudrate = 115200*8
-    ser.port = "/dev/ttyUSB0" #'COM12'
+    ser.baudrate = 115200*4
+    ser.port = "/dev/ttyUSB1" #'COM12'
 #    ser.set_buffer_size(rx_size = 12800, tx_size = 12800)
     print(ser)
     ser.open()
 
     buf = bytearray()
     count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER reading
-    NUMBER = 30
+    NUMBER = 10000
     print("***********************************************************************")
+    time_1 = time.time()
+    print(time_1)
+    print("***********************************************************************")
+#    time.sleep(20)
+
     while True:
         chunk = ser.read(66)
         if chunk != None:
@@ -42,10 +47,11 @@ def main(arg):
                 x = np.arange(0, data.buffer_info()[1], 1)
                 print(f'SIZE={data.buffer_info()[1]}')
                 plt.plot(x,data)
-#                plt.plot(data)
+#                plt.plot(data)               
+                time_2 = time.time()
+                time_interval = time_2 - time_1
+                print(time_interval)
                 plt.show()
-                # for w in data:
-                #     print(w)
                 return
             buf.extend(chunk)
             bytes_to_drop = handle_buf(buf)
