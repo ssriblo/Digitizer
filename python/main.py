@@ -5,6 +5,8 @@ from cobs import cobs
 import matplotlib.pyplot as plt
 import array
 import numpy as np
+#import notch
+from notch import notch
 
 PRINTLOG = 0
 data = array.array('I')
@@ -23,14 +25,14 @@ def main(arg):
 
     ser = serial.Serial()
     ser.baudrate = 115200*4
-    ser.port = "/dev/ttyUSB1" #'COM12'
+    ser.port = "/dev/ttyUSB0" #'COM12'
 #    ser.set_buffer_size(rx_size = 12800, tx_size = 12800)
     print(ser)
     ser.open()
 
     buf = bytearray()
     count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER reading
-    NUMBER = 10000
+    NUMBER =10 #10000
     print("***********************************************************************")
     time_1 = time.time()
     print(time_1)
@@ -45,12 +47,15 @@ def main(arg):
             printLog(f'************ COUNT={count}')
             if(count > NUMBER):
                 x = np.arange(0, data.buffer_info()[1], 1)
-                print(f'SIZE={data.buffer_info()[1]}')
+                size = data.buffer_info()[1]
+                print(f'SIZE={size}')
                 plt.plot(x,data)
 #                plt.plot(data)               
                 time_2 = time.time()
                 time_interval = time_2 - time_1
                 print(time_interval)
+                sample_us = 16*8
+                notch(data, sample_us, size)
                 plt.show()
                 return
             buf.extend(chunk)

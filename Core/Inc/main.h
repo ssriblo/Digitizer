@@ -69,7 +69,7 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define BAUDRATE 115200
-#define TIM14_US 16 // MUST be 8, nor 800 !!!!
+#define TIM14_US 8 // MUST be 8, nor 800 !!!!
 #define RS485_DERE__Pin GPIO_PIN_0
 #define RS485_DERE__GPIO_Port GPIOA
 #define CNVST_Pin GPIO_PIN_3
