@@ -57,7 +57,11 @@ UART_HandleTypeDef huart1;
 /*****************************************************************************/
 cbuf_handle_t cbuf;
 uint16_t buffer[RING_BUFFER_SIZE * sizeof(uint16_t)];
-
+#define TEST_BUFF	1
+#ifdef TEST_BUFF
+cbuf_handle_t cbuf4Test;
+uint16_t buffer4Test[RING_BUFFER_SIZE * sizeof(uint16_t)];
+#endif
 /*****************************************************************************/
 
 /* USER CODE END PV */
@@ -117,9 +121,12 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 //  uint16_t * buffer  = malloc(RING_BUFFER_SIZE * sizeof(uint16_t));
-  memset(buffer, 0xFF, sizeof(uint16_t)); // for debugging
   cbuf = circular_buf_init(buffer, RING_BUFFER_SIZE);
-
+  memset(buffer, 0xFF, sizeof(uint16_t)*RING_BUFFER_SIZE); // for debugging
+#ifdef TEST_BUFF
+  cbuf4Test = circular_buf_init(buffer4Test, RING_BUFFER_SIZE);
+  memset(buffer4Test, 0xFF, sizeof(uint16_t)*RING_BUFFER_SIZE); // for debugging
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,9 +137,9 @@ int main(void)
   {
   	if(0 == circular_buf_get(cbuf, &data)){
   		// new data appeared
-
-  		GPIOA->BSRR = TEST_PA4_Pin; // Set High
-
+#ifdef TEST_BUFF
+  	    circular_buf_put(cbuf4Test, data); //
+#endif
   		// Let check RingBuff size:
   		temp = circular_buf_size(cbuf);
   		if(temp > ring_buff_size){
@@ -152,11 +159,8 @@ int main(void)
 				cobs_doing((uint16_t)avrg_data);
 			}
 
-				GPIOA->BSRR = (uint32_t)TEST_PA4_Pin <<16u; // Set LOW
-
   	}
   }
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -226,9 +230,9 @@ static void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT; // SPI_DATASIZE_16BIT
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW; // Must be SPI_POLARITY_LOW
+  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE; // Must be SPI_PHASE_2EDGE
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -294,7 +298,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = BAUDRATE*4;
+  huart1.Init.BaudRate = BAUDRATE*8;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

@@ -156,17 +156,19 @@ void SysTick_Handler(void)
 void TIM14_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM14_IRQn 0 */
-	static bool flip_flop = false;
-  uint32_t byte1, byte2;
-  uint16_t word;
+  volatile uint16_t word;
+  static bool flip_flop = false;
+  volatile uint32_t byte_msb, byte_lsb;
+//  static uint16_t word;
   static uint32_t test_data = 0; // FOR TEST ONLY!!! REMOVE IT LATER !!!
 
   /* USER CODE END TIM14_IRQn 0 */
   HAL_TIM_IRQHandler(&htim14);
   /* USER CODE BEGIN TIM14_IRQn 1 */
   if(true == flip_flop){
-  	flip_flop = false;
     GPIOA->BSRR = CNVST_Pin; // Set High
+  	flip_flop = false;
+//    GPIOA->BSRR = (uint32_t)CNVST_Pin <<16u; // Set LOW
     // do nothing, this is ADC convert phase
   }else{
   	// SPI read; Ring Buffer write
@@ -176,18 +178,36 @@ void TIM14_IRQHandler(void)
 //    GPIOA->BSRR = TEST_PA4_Pin; // Set High
 #define SPILOW 1
 #ifdef SPILOW
-//    while(!(SPI1->SR & SPI_SR_TXE));
-    *(volatile uint8_t *)&SPI1->DR = 0;
-    while(!(SPI1->SR & SPI_SR_RXNE));
-    byte1 = (*(volatile uint8_t *)&SPI1->DR);
-    *(volatile uint8_t *)&SPI1->DR = 0;
-    while(!(SPI1->SR & SPI_SR_RXNE));
-    byte2 = (*(volatile uint8_t *)&SPI1->DR);
-    word = (byte1 && 0xFF) + ((byte2 && 0xFF) << 8);
-#else
+    bool txallowed = true;
+    bool rxMsb = true;
+    while (true){
+      /* Check TXE flag */
+      if ( (SPI1->SR & SPI_SR_TXE) && (txallowed == true)){
+        SPI1->DR = 0xFF;
+        /* Next Data is a reception (Rx). Tx not allowed */
+        txallowed = false;
+      }
+      /* Wait until RXNE flag is reset */
+      if( SPI1->SR & SPI_SR_RXNE )
+      {
+        if(rxMsb == true){
+          byte_msb = (*(volatile uint8_t *)&SPI1->DR);
+
+      	  rxMsb = false;
+        }else{
+          byte_lsb = (*(volatile uint8_t *)&SPI1->DR);
+          break;
+        }
+        /* Next Data is a Transmission (Tx). Tx is allowed */
+        txallowed = true;
+      }
+    }
+    word = (byte_lsb & 0xFF) + ((byte_msb & 0xFF)<< 8 );
+#else // SPILOW - no
     uint8_t pData[10];
-    HAL_SPI_TransmitReceive (&hspi1, pData, pData, 1, HAL_MAX_DELAY);
-#endif
+    HAL_SPI_TransmitReceive (&hspi1, pData, pData, 2, HAL_MAX_DELAY);
+    word = (pData[0]<<8) + pData[1];
+#endif // SPILOW - end
 //    GPIOA->BSRR = (uint32_t)TEST_PA4_Pin <<16u; // Set LOW
 
     /**************************************************/

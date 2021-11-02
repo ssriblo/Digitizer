@@ -45,12 +45,12 @@ extern "C" {
 
 /**************************************************/
 /****  // FOR TEST ONLY!!! REMOVE IT LATER !!! ****/
-#define TEST_SPI_DATA					1
+//#define TEST_SPI_DATA					1
 /**************************************************/
 
 #define RING_BUFFER_SIZE			256 // Let TBD again
-#define AVERAGE_WINDOW_SIZE		8 // Let TBD again
-#define SHIFT_AVRG_DATA				3 // This MUST be correlated with AVERAGE_WINDOW_SIZE <= 2^SHIFT_AVRG_DATA
+#define AVERAGE_WINDOW_SIZE			2 // was: 8 // Let TBD again
+#define SHIFT_AVRG_DATA				1 // was: 3 // This MUST be correlated with AVERAGE_WINDOW_SIZE <= 2^SHIFT_AVRG_DATA
 #define COBS_BUFF_SIZE				64
 
 /* USER CODE END EC */
@@ -69,7 +69,7 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define BAUDRATE 115200
-#define TIM14_US 8
+#define TIM14_US 8 // MUST be 8, nor 800 !!!!
 #define RS485_DERE__Pin GPIO_PIN_0
 #define RS485_DERE__GPIO_Port GPIOA
 #define CNVST_Pin GPIO_PIN_3
