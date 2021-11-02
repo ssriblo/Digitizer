@@ -49,8 +49,8 @@ extern "C" {
 /**************************************************/
 
 #define RING_BUFFER_SIZE			256 // Let TBD again
-#define AVERAGE_WINDOW_SIZE		8 // Let TBD again
-#define SHIFT_AVRG_DATA				3 // This MUST be correlated with AVERAGE_WINDOW_SIZE <= 2^SHIFT_AVRG_DATA
+#define AVERAGE_WINDOW_SIZE			2 // was: 8 // Let TBD again
+#define SHIFT_AVRG_DATA				1 // was: 3 // This MUST be correlated with AVERAGE_WINDOW_SIZE <= 2^SHIFT_AVRG_DATA
 #define COBS_BUFF_SIZE				64
 
 /* USER CODE END EC */

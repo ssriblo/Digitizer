@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import array
 import numpy as np
 #import notch
-from notch import notch
+from filter import lp
 
 PRINTLOG = 0
 data = array.array('I')
@@ -24,14 +24,14 @@ def main(arg):
         print(PRINTLOG)
 
     ser = serial.Serial()
-    ser.baudrate = 115200*4
+    ser.baudrate = 115200*8
     ser.port = "/dev/ttyUSB0" #'COM12'
 #    ser.set_buffer_size(rx_size = 12800, tx_size = 12800)
     print(ser)
     ser.open()
 
     buf = bytearray()
-    count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER reading
+    count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER readingconda
     NUMBER =10 #10000
     print("***********************************************************************")
     time_1 = time.time()
@@ -54,8 +54,8 @@ def main(arg):
                 time_2 = time.time()
                 time_interval = time_2 - time_1
                 print(time_interval)
-                sample_us = 16*8
-                notch(data, sample_us, size)
+                sample_us = 8*2
+                lp(data, sample_us, size)
                 plt.show()
                 return
             buf.extend(chunk)
