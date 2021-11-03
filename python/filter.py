@@ -18,7 +18,7 @@ def butter_lowpass_filter(data, cutoff, fs, order=5):
     y = lfilter(b, a, data)
     return y
 
-def lp(data, sample_us, size):
+def lp(data, sample_us, size, PRINTSOURCE):
     samp_freq = 1000_000/sample_us  # Sample frequency (Hz)
 #    t = np.linspace(0.0, 1, size)
     T = (sample_us * size)/1000_000         # seconds
@@ -52,18 +52,13 @@ def lp(data, sample_us, size):
 
     data_filtered = butter_lowpass_filter(data_pure, cutoff, fs, order)
 
-    plt.subplot(2, 1, 2)
-    plt.plot(t, data_pure, 'b-', label='data')
-    plt.plot(t, data_filtered, 'g-', linewidth=2, label='filtered data')
+#    plt.subplot(2, 1, 2)
+    if(PRINTSOURCE):
+        plt.plot(t, data_pure, 'b-', label='data')
+    plt.plot(t, data_filtered, 'g-', linewidth=1, label='filtered data')
     plt.xlabel('Time [sec]')
     plt.grid()
-    plt.legend()
+    plt.legend(loc='upper right')
 
     plt.subplots_adjust(hspace=0.35)
-
-
-#    plt.figure('result')    plt.subplot(211)
-#    plt.plot(t, data, color = 'r')
-#    plt.subplot(212)
-#    plt.plot(t, data_filtered, color = 'r')
 

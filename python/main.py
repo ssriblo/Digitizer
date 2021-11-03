@@ -8,20 +8,28 @@ import numpy as np
 #import notch
 from filter import lp
 
-PRINTLOG = 0
+PRINTLOG = False
+PRINTSOURCE = False
+NUMBER =1_000 #10000
 data = array.array('I')
 
 def printLog(a):
-    if( PRINTLOG > 0):
+    if( PRINTLOG ):
         print(a)
 
 def main(arg):
     global PRINTLOG
+    global PRINTSOURCE
+    global NUMBER
+    if(len(arg)==1):
+        print("try format for run:")
+        print("python3 main.py [<NUMBER=1000>] [<PRINTSOURCE=False>] [<PRINTLOG=False>]")
     if(len(arg) > 1):
-        # arg[1] printLog flag
-        print(">>>-1")
-        PRINTLOG = int(arg[1])
-        print(PRINTLOG)
+        NUMBER = int(arg[1])
+        if(len(arg)>2):
+            PRINTSOURCE = bool(arg[2])
+            if(len(arg)>3):
+                PRINTLOG = bool(arg[3])
 
     ser = serial.Serial()
     ser.baudrate = 115200*8
@@ -32,30 +40,28 @@ def main(arg):
 
     buf = bytearray()
     count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER readingconda
-    NUMBER =100 #10000
     print("***********************************************************************")
     time_1 = time.time()
     print(time_1)
     print("***********************************************************************")
-#    time.sleep(20)
 
     while True:
         chunk = ser.read(66)
         if chunk != None:
             if(count >=0): 
                 count = count + 1
-            printLog(f'************ COUNT={count}')
+            print(f'\r         COUNT={count}', end="", flush=True)
             if(count > NUMBER):
                 x = np.arange(0, data.buffer_info()[1], 1)
                 size = data.buffer_info()[1]
-                print(f'SIZE={size}')
-                plt.plot(x,data)
+                print(f'\nSIZE={size}')
+#                plt.plot(x,data)
 #                plt.plot(data)               
                 time_2 = time.time()
                 time_interval = time_2 - time_1
                 print(time_interval)
                 sample_us = 8*2
-                lp(data, sample_us, size)
+                lp(data, sample_us, size, PRINTSOURCE)
                 plt.show()
                 return
             buf.extend(chunk)
