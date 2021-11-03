@@ -32,7 +32,7 @@ def main(arg):
 
     buf = bytearray()
     count = 0 #-1 # if count<0 then non-stop, if count=0 stop after NUMBER readingconda
-    NUMBER =10 #10000
+    NUMBER =100 #10000
     print("***********************************************************************")
     time_1 = time.time()
     print(time_1)
