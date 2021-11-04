@@ -6,6 +6,8 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import butter, lfilter, freqz
+from scipy.fftpack import fft, ifft, fftshift, rfft, fftfreq
+import scipy
 
 def butter_lowpass(cutoff, fs, order=5):
     nyq = 0.5 * fs
@@ -28,12 +30,13 @@ def lp(data, sample_us, size, PRINTSOURCE):
 #    data = np.sin(1500.0*2*np.pi*t) + 1.5*np.cos(4000.0*2*np.pi*t) + 0.5*np.sin(5000.0*2*np.pi*t)
 
     # Filter requirements.
-    order = 2
+    order = 5
     fs = samp_freq       # sample rate, Hz
     cutoff = 1000.0  # desired cutoff frequency of the filter, Hz
     print(f'fs={fs}')
     # Get the filter coefficients so we can check its frequency response.
     b, a = butter_lowpass(cutoff, fs, order)
+    
     # Plot the frequency response.
     w, h = freqz(b, a, worN=8000)
 #    plt.subplot(2, 1, 1)
@@ -50,9 +53,20 @@ def lp(data, sample_us, size, PRINTSOURCE):
     data_pure = data_detrended_const
 #    data_pure = data_detrended_linear
 
+    fourier = np.fft.fft(data_pure)
+    n = size
+    freq = np.fft.fftfreq(n, d=sample_us/1000)
+
+    plt.subplot(2, 1, 1)
+    plt.plot(freq, np.abs(fourier))
+    plt.xlim(0, 2)
+    plt.xlabel('Frequency [KHz]')
+    plt.grid()
+
+
     data_filtered = butter_lowpass_filter(data_pure, cutoff, fs, order)
 
-#    plt.subplot(2, 1, 2)
+    plt.subplot(2, 1, 2)
     if(PRINTSOURCE):
         plt.plot(t, data_pure, 'b-', label='data')
     plt.plot(t, data_filtered, 'g-', linewidth=1, label='filtered data')

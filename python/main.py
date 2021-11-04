@@ -60,7 +60,7 @@ def main(arg):
                 time_2 = time.time()
                 time_interval = time_2 - time_1
                 print(time_interval)
-                sample_us = 8*2
+                sample_us = 16*2
                 lp(data, sample_us, size, PRINTSOURCE)
                 plt.show()
                 return
