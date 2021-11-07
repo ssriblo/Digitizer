@@ -46,6 +46,7 @@ def main(arg):
     print("***********************************************************************")
 
     while True:
+#        chunk = bytearray()
         chunk = ser.read(66)
         if chunk != None:
             if(count >=0): 
@@ -60,10 +61,11 @@ def main(arg):
                 time_2 = time.time()
                 time_interval = time_2 - time_1
                 print(time_interval)
-                sample_us = 16*2
+                sample_us = 50 #100 #16*2
                 lp(data, sample_us, size, PRINTSOURCE)
                 plt.show()
                 return
+#            print(f'     CHUNK BUFF LENGTH={len(chunk)}')
             buf.extend(chunk)
             bytes_to_drop = handle_buf(buf)
             del buf[0:bytes_to_drop]  
@@ -73,13 +75,15 @@ def handle_buf(buf):
     zero_index = buf.index(0)
     printLog(f'zero index={zero_index}')
     printLog(f'handle_buff(): \n{buf.hex()}')
+
+#    print(f'   handle BUFF LENGTH={len(buf)}')
+
     odd = 1
     if(len(buf) > zero_index + 65):
         cobs_buff = buf[zero_index + 1:zero_index+66]
         printLog(f'COBS BUFF: \n{cobs_buff.hex()}')
         decoded = cobs.decode(cobs_buff)
-        printLog(type(decoded))
-        printLog(f'DECODED: \n{decoded.hex()}')
+#        printLog(f'DECODED: \n{decoded.hex()}')
         for byte in decoded:
 #            print(f'byte={byte} odd={odd}')
             if(odd == 1):

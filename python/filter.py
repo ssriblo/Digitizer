@@ -24,6 +24,9 @@ def lp(data, sample_us, size, PRINTSOURCE):
     samp_freq = 1000_000/sample_us  # Sample frequency (Hz)
 #    t = np.linspace(0.0, 1, size)
     T = (sample_us * size)/1000_000         # seconds
+    print(f'Time aquire window={T}')
+    print(f'size={size}')
+    print(f'sample_us={sample_us}')
     t = np.linspace(0, T, size, endpoint=False)
 
     
@@ -59,7 +62,7 @@ def lp(data, sample_us, size, PRINTSOURCE):
 
     plt.subplot(2, 1, 1)
     plt.plot(freq, np.abs(fourier))
-    plt.xlim(0, 2)
+    plt.xlim(0, 0.2)
     plt.xlabel('Frequency [KHz]')
     plt.grid()
 

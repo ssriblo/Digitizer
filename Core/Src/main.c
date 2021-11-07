@@ -146,7 +146,7 @@ int main(void)
   			ring_buff_size = temp;
   		}
 
-
+#ifdef AVERAGING
 			if(avr_counter++ < (AVERAGE_WINDOW_SIZE-1)){
 				sum = sum + data;
 			}else{
@@ -158,7 +158,9 @@ int main(void)
 				avrg_data = avrg_data >> SHIFT_AVRG_DATA; // If AVERAGE_WINDOW_SIZE=8, then let shift 3 bits right
 				cobs_doing((uint16_t)avrg_data);
 			}
-
+#else
+			cobs_doing((uint16_t)data);
+#endif
   	}
   }
     /* USER CODE END WHILE */
