@@ -32,8 +32,8 @@ def main(arg):
                 PRINTLOG = bool(arg[3])
 
     ser = serial.Serial()
-    ser.baudrate = 115200*8
-    ser.port = "/dev/ttyUSB0" #'COM12'
+    ser.baudrate = 115200*4
+    ser.port = "/dev/ttyUSB1" #'COM12'
 #    ser.set_buffer_size(rx_size = 12800, tx_size = 12800)
     print(ser)
     ser.open()
@@ -61,7 +61,7 @@ def main(arg):
                 time_2 = time.time()
                 time_interval = time_2 - time_1
                 print(time_interval)
-                sample_us = 50 #100 #16*2
+                sample_us = 16*8 #100 #50 #100 #16*2
                 lp(data, sample_us, size, PRINTSOURCE)
                 plt.show()
                 return
