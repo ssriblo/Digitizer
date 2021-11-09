@@ -23,17 +23,20 @@ def main(arg):
     global NUMBER
     if(len(arg)==1):
         print("try format for run:")
-        print("python3 main.py [<NUMBER=1000>] [<PRINTSOURCE=False>] [<PRINTLOG=False>]")
+        print("python3 main.py <PORT>[<NUMBER=1000>] [<PRINTSOURCE=False>] [<PRINTLOG=False>]")
+        return
     if(len(arg) > 1):
-        NUMBER = int(arg[1])
-        if(len(arg)>2):
-            PRINTSOURCE = bool(arg[2])
+        PORT = arg[1]
+        if(len(arg) > 2):
+            NUMBER = int(arg[2])
             if(len(arg)>3):
-                PRINTLOG = bool(arg[3])
+                PRINTSOURCE = bool(arg[3])
+                if(len(arg)>4):
+                    PRINTLOG = bool(arg[4])
 
     ser = serial.Serial()
     ser.baudrate = 115200*4
-    ser.port = "/dev/ttyUSB1" #'COM12'
+    ser.port = PORT # "/dev/ttyUSB1" #'COM12'
 #    ser.set_buffer_size(rx_size = 12800, tx_size = 12800)
     print(ser)
     ser.open()
