@@ -62,7 +62,7 @@ def lp(data, sample_us, size, PRINTSOURCE):
 
     plt.subplot(2, 1, 1)
     plt.plot(freq, np.abs(fourier))
-    plt.xlim(0, 0.2)
+    plt.xlim(0, 2)
     plt.xlabel('Frequency [KHz]')
     plt.grid()
 
